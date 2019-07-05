@@ -278,7 +278,7 @@ func NoDiskConflict(pod *v1.Pod, meta algorithm.PredicateMetadata, nodeInfo *sch
 	for _, v := range pod.Spec.Volumes {
 		for _, ev := range nodeInfo.Pods() {
 			if isVolumeConflict(v, ev) {
-				return false, []algorithm.PredicateFailureReason{ErrDiskConflict}, nil
+				return false, []algorithm.PredicateFailureReason{ErrDiskConflict}, nil // []algorithm.PredicateFailureReason{ErrDiskConflict}是切片的初始化方式
 			}
 		}
 	}

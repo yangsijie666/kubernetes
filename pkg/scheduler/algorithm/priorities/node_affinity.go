@@ -69,9 +69,9 @@ func CalculateNodeAffinityPriorityMap(pod *v1.Pod, meta interface{}, nodeInfo *s
 
 	return schedulerapi.HostPriority{
 		Host:  node.Name,
-		Score: int(count),
+		Score: int(count), // 缺少归一化函数，所以得分可能会在10以上
 	}, nil
 }
 
 // CalculateNodeAffinityPriorityReduce is a reduce function for node affinity priority calculation.
-var CalculateNodeAffinityPriorityReduce = NormalizeReduce(schedulerapi.MaxPriority, false)
+var CalculateNodeAffinityPriorityReduce = NormalizeReduce(schedulerapi.MaxPriority, false) // NormalizeReduce返回的是一个通用的ReduceFunction

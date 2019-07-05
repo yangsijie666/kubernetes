@@ -31,10 +31,10 @@ func NormalizeReduce(maxPriority int, reverse bool) algorithm.PriorityReduceFunc
 		_ *v1.Pod,
 		_ interface{},
 		_ map[string]*schedulercache.NodeInfo,
-		result schedulerapi.HostPriorityList) error {
+		result schedulerapi.HostPriorityList) error { // 这个result是HostPriorityList，对应1个算法N个node的结果集
 
 		var maxCount int
-		for i := range result {
+		for i := range result { // 遍历result将最高的Score赋值给maxCount
 			if result[i].Score > maxCount {
 				maxCount = result[i].Score
 			}
@@ -52,7 +52,7 @@ func NormalizeReduce(maxPriority int, reverse bool) algorithm.PriorityReduceFunc
 		for i := range result {
 			score := result[i].Score
 
-			score = maxPriority * score / maxCount
+			score = maxPriority * score / maxCount // maxPriority用来将得分限制在0-10
 			if reverse {
 				score = maxPriority - score
 			}

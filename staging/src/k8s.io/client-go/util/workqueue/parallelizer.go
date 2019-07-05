@@ -34,11 +34,11 @@ func Parallelize(workers, pieces int, doWorkPiece DoWorkPieceFunc) {
 }
 
 // ParallelizeUntil is a framework that allows for parallelizing N
-// independent pieces of work until done or the context is canceled.
+// independent pieces of work until done or the context is canceled. ParallelizeUntil是一个框架，允许并行化N个独立的工作，直到完成或取消上下文
 func ParallelizeUntil(ctx context.Context, workers, pieces int, doWorkPiece DoWorkPieceFunc) {
 	var stop <-chan struct{}
 	if ctx != nil {
-		stop = ctx.Done()
+		stop = ctx.Done() // 通道类型变量，其本身就是一个指针，所以可以被多个goroutine复用
 	}
 
 	toProcess := make(chan int, pieces)

@@ -121,7 +121,7 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 	hasAffinityConstraints := affinity != nil && affinity.PodAffinity != nil
 	hasAntiAffinityConstraints := affinity != nil && affinity.PodAntiAffinity != nil
 
-	allNodeNames := make([]string, 0, len(nodeNameToInfo))
+	allNodeNames := make([]string, 0, len(nodeNameToInfo)) // 所有Node的名字
 	for name := range nodeNameToInfo {
 		allNodeNames = append(allNodeNames, name)
 	}
@@ -216,7 +216,7 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 		return nil, pm.firstError
 	}
 
-	for _, node := range nodes {
+	for _, node := range nodes { // 当遍历完所有的node之后，可以得到1个最高分和1个最低分，分别记为maxCount和minCount
 		if pm.counts[node.Name] > maxCount {
 			maxCount = pm.counts[node.Name]
 		}
@@ -229,7 +229,7 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 	result := make(schedulerapi.HostPriorityList, 0, len(nodes))
 	for _, node := range nodes {
 		fScore := float64(0)
-		if (maxCount - minCount) > 0 {
+		if (maxCount - minCount) > 0 { // 将所有Node的得分归一化为[0-10]
 			fScore = float64(schedulerapi.MaxPriority) * ((pm.counts[node.Name] - minCount) / (maxCount - minCount))
 		}
 		result = append(result, schedulerapi.HostPriority{Host: node.Name, Score: int(fScore)})

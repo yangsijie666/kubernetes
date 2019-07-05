@@ -61,11 +61,11 @@ type PriorityFunction func(pod *v1.Pod, nodeNameToInfo map[string]*schedulercach
 // PriorityConfig is a config used for a priority function.
 type PriorityConfig struct {
 	Name   string
-	Map    PriorityMapFunction
+	Map    PriorityMapFunction // 新的优选类型（连着下面那个）
 	Reduce PriorityReduceFunction
 	// TODO: Remove it after migrating all functions to
 	// Map-Reduce pattern.
-	Function PriorityFunction
+	Function PriorityFunction // 旧的优选类型
 	Weight   int
 }
 

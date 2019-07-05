@@ -302,7 +302,7 @@ type ExtenderBindingResult struct {
 }
 
 // HostPriority represents the priority of scheduling to a particular host, higher priority is better.
-type HostPriority struct {
+type HostPriority struct { // HostPriority包括了Node的名字，以及Node的得分
 	// Name of the host
 	Host string
 	// Score associated with the host

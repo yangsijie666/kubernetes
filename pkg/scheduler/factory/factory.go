@@ -1251,7 +1251,7 @@ func (c *configFactory) getBinderFunc(extenders []algorithm.SchedulerExtender) f
 	}
 }
 
-// Creates a scheduler from a set of registered fit predicate keys and priority keys.
+// Creates a scheduler from a set of registered fit predicate keys and priority keys.	// 根据predicate keys和priority keys创建scheduler调度器
 func (c *configFactory) CreateFromKeys(predicateKeys, priorityKeys sets.String, extenders []algorithm.SchedulerExtender) (*Config, error) {
 	klog.V(2).Infof("Creating scheduler with fit predicates '%v' and priority functions '%v'", predicateKeys, priorityKeys)
 

@@ -75,17 +75,17 @@ type SchedulerExtender interface {
 
 // ScheduleAlgorithm is an interface implemented by things that know how to schedule pods
 // onto machines.
-type ScheduleAlgorithm interface {
+type ScheduleAlgorithm interface { // 是个接口，意味着只要实现了这个接口，就能够实现自己的调度器
 	Schedule(*v1.Pod, NodeLister) (selectedMachine string, err error)
 	// Preempt receives scheduling errors for a pod and tries to create room for
 	// the pod by preempting lower priority pods if possible.
 	// It returns the node where preemption happened, a list of preempted pods, a
 	// list of pods whose nominated node name should be removed, and error if any.
-	Preempt(*v1.Pod, NodeLister, error) (selectedNode *v1.Node, preemptedPods []*v1.Pod, cleanupNominatedPods []*v1.Pod, err error)
+	Preempt(*v1.Pod, NodeLister, error) (selectedNode *v1.Node, preemptedPods []*v1.Pod, cleanupNominatedPods []*v1.Pod, err error) // 抢占
 	// Predicates() returns a pointer to a map of predicate functions. This is
-	// exposed for testing.
-	Predicates() map[string]FitPredicate
+	// exposed for testing.	下面两个方法全部都只是用来测试的，实际只要调用Schedule就会自动完成Predicates和Prioritizers，进而得到最优Node
+	Predicates() map[string]FitPredicate // 预选（寻找可用节点）
 	// Prioritizers returns a slice of priority config. This is exposed for
 	// testing.
-	Prioritizers() []PriorityConfig
+	Prioritizers() []PriorityConfig // 优选（计算得分）
 }

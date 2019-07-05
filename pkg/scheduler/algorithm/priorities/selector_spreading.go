@@ -231,12 +231,12 @@ func (s *ServiceAntiAffinity) CalculateAntiAffinityPriorityMap(pod *v1.Pod, meta
 	} else {
 		firstServiceSelector = getFirstServiceSelector(pod, s.serviceLister)
 	}
-	//pods matched namespace,selector on current node
+	//pods matched namespace,selector on current node	查找给定node在给定namespace下符合selector的pod，返回值是[]*v1.Pod
 	matchedPodsOfNode := filteredPod(pod.Namespace, firstServiceSelector, nodeInfo)
 
 	return schedulerapi.HostPriority{
 		Host:  node.Name,
-		Score: int(len(matchedPodsOfNode)),
+		Score: int(len(matchedPodsOfNode)), // 返回值中Score设置成上面找到的pod的数量
 	}, nil
 }
 

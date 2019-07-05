@@ -54,7 +54,7 @@ const (
 )
 
 // Scheduler watches for new unscheduled pods. It attempts to find
-// nodes that they fit on and writes bindings back to the api server.
+// nodes that they fit on and writes bindings back to the api server.(应该就是将Pod对应的spec.nodeName告诉api server)
 type Scheduler struct {
 	config *factory.Config
 }
@@ -286,9 +286,9 @@ func (sched *Scheduler) Config() *factory.Config {
 	return sched.config
 }
 
-// schedule implements the scheduling algorithm and returns the suggested host.
+// schedule implements the scheduling algorithm and returns the suggested host.(开始调用算法找出最优Node)
 func (sched *Scheduler) schedule(pod *v1.Pod) (string, error) {
-	host, err := sched.config.Algorithm.Schedule(pod, sched.config.NodeLister)
+	host, err := sched.config.Algorithm.Schedule(pod, sched.config.NodeLister) // 入参是Pod和Nodes
 	if err != nil {
 		pod = pod.DeepCopy()
 		sched.config.Error(pod, err)
@@ -509,9 +509,9 @@ func (sched *Scheduler) bind(assumed *v1.Pod, b *v1.Binding) error {
 	return nil
 }
 
-// scheduleOne does the entire scheduling workflow for a single pod.  It is serialized on the scheduling algorithm's host fitting.
+// scheduleOne does the entire scheduling workflow for a single pod.  It is serialized on the scheduling algorithm's host fitting. (意思是顺序执行的，不是并发的)
 func (sched *Scheduler) scheduleOne() {
-	pod := sched.config.NextPod()
+	pod := sched.config.NextPod() // 获取一个待调度的Pod
 	// pod could be nil when schedulerQueue is closed
 	if pod == nil {
 		return
@@ -524,14 +524,14 @@ func (sched *Scheduler) scheduleOne() {
 
 	klog.V(3).Infof("Attempting to schedule pod: %v/%v", pod.Namespace, pod.Name)
 
-	// Synchronously attempt to find a fit for the pod.
+	// Synchronously attempt to find a fit for the pod. (开始正式的调度流程)
 	start := time.Now()
-	suggestedHost, err := sched.schedule(pod)
+	suggestedHost, err := sched.schedule(pod) // 里面做的就是具体的调度过程，调度出最优Node
 	if err != nil {
 		// schedule() may have failed because the pod would not fit on any host, so we try to
 		// preempt, with the expectation that the next time the pod is tried for scheduling it
 		// will fit due to the preemption. It is also possible that a different pod will schedule
-		// into the resources that were preempted, but this is harmless.
+		// into the resources that were preempted, but this is harmless. 可能没有找到合适的Node，此时需要进入抢占调度逻辑
 		if fitError, ok := err.(*core.FitError); ok {
 			preemptionStartTime := time.Now()
 			sched.preempt(pod, fitError)
@@ -575,7 +575,7 @@ func (sched *Scheduler) scheduleOne() {
 		return
 	}
 	// bind the pod to its host asynchronously (we can do this b/c of the assumption step above).
-	go func() {
+	go func() { // 启用一个goroutine完成pod的binding
 		// Bind volumes first before Pod
 		if !allBound {
 			err := sched.bindVolumes(assumedPod)

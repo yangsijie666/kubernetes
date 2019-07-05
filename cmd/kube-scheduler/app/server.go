@@ -160,7 +160,7 @@ func runCommand(cmd *cobra.Command, args []string, opts *options.Options) error 
 		return fmt.Errorf("unable to register configz: %s", err)
 	}
 
-	return Run(cc, stopCh)
+	return Run(cc, stopCh) // 只有在出错或者stopCh被关闭时才会退出
 }
 
 // Run executes the scheduler based on the given configuration. It only return on error or when stopCh is closed.
